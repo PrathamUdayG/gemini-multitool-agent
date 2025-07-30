@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Agentic Chatbot</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 40px;
+            background-color: #f4f4f4;
+        }
+        .chat-container {
+            max-width: 600px;
+            margin: auto;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+        }
+        .chat-log {
+            border: 1px solid #ccc;
+            height: 300px;
+            overflow-y: auto;
+            padding: 10px;
+            margin-bottom: 20px;
+            white-space: pre-wrap;
+        }
+        input[type="text"] {
+            width: 80%;
+            padding: 10px;
+        }
+        button {
+            padding: 10px 20px;
+        }
+    </style>
+</head>
+<body>
+<div class="chat-container">
+    <h2>Agentic Chatbot</h2>
+    <div class="chat-log" id="chat-log"></div>
+    <input type="text" id="user-input" placeholder="Ask something..." />
+    <button onclick="sendMessage()">Send</button>
+</div>
+
+<script>
+    async function sendMessage() {
+        const input = document.getElementById("user-input");
+        const chatLog = document.getElementById("chat-log");
+        const userMessage = input.value.trim();
+
+        if (!userMessage) return;
+
+        // Show user message
+        chatLog.innerHTML += `You: ${userMessage}\n`;
+
+        try {
+            const response = await fetch("/chat", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ message: userMessage })
+            });
+
+            const data = await response.json();
+
+            console.log("🌐 Backend says:", data);
+
+            // Append agent response
+            chatLog.innerHTML += `Bot: ${data.reply}\n\n`;
+
+            chatLog.scrollTop = chatLog.scrollHeight;
+        } catch (error) {
+            chatLog.innerHTML += `Bot: ⚠️ Error: ${error}\n\n`;
+        }
+
+        input.value = "";
+    }
+</script>
+</body>
+</html>
